@@ -1,326 +1,1133 @@
 <!DOCTYPE html>
-<html lang="sv">
+<html lang="sv" data-theme="dark">
 <head>
 <meta charset="UTF-8">
-<title>Café Norrsken – Fjällens hypeaste fika 🚀</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="Café Norrsken – Fjällens mysigaste fika med utsikt över polhimlen.">
+<title>Café Norrsken · Fjällens Mysigaste Fika ✨</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <style>
-  :root {
-    --bg: #f5f1ea;
-    --text: #2c2c2c;
-    --primary: #1e2a38;
-    --accent: #f0c674;
-    --card: #ffffff;
-  }
-  [data-theme="dark"] {
-    --bg: #121821;
-    --text: #f0f0f0;
-    --primary: #0d47a1;
-    --accent: #ffcc66;
-    --card: #1e2a38;
-  }
+/* ============ VARIABLES ============ */
+:root {
+  --bg: #f7f5f0;
+  --bg-alt: #ffffff;
+  --text: #1a1a2e;
+  --text-soft: #555;
+  --primary: #1e3a5f;
+  --accent: #d4a574;
+  --accent-2: #c56b48;
+  --glass: rgba(255,255,255,0.6);
+  --border: rgba(0,0,0,0.08);
+  --shadow: 0 10px 40px rgba(0,0,0,0.08);
+  --shadow-hover: 0 20px 60px rgba(0,0,0,0.15);
+  --radius: 20px;
+  --radius-sm: 12px;
+  --transition: cubic-bezier(0.25, 0.8, 0.25, 1);
+}
+[data-theme="dark"] {
+  --bg: #0a0e1a;
+  --bg-alt: #131826;
+  --text: #f0f0f5;
+  --text-soft: #a0a0b0;
+  --primary: #4a90e2;
+  --accent: #ffd47a;
+  --accent-2: #ff8c5a;
+  --glass: rgba(255,255,255,0.05);
+  --border: rgba(255,255,255,0.1);
+  --shadow: 0 10px 40px rgba(0,0,0,0.4);
+  --shadow-hover: 0 20px 60px rgba(0,0,0,0.6);
+}
 
-  * { margin:0; padding:0; box-sizing:border-box; font-family:'Segoe UI',sans-serif; }
-  body { background:var(--bg); color:var(--text); transition:0.4s; overflow-x:hidden; }
+* { margin:0; padding:0; box-sizing:border-box; }
+html { scroll-behavior:smooth; }
+body {
+  font-family:'Inter',sans-serif;
+  background:var(--bg);
+  color:var(--text);
+  line-height:1.6;
+  overflow-x:hidden;
+  transition:background 0.5s var(--transition),color 0.5s var(--transition);
+  cursor:none;
+}
+h1,h2,h3 { font-family:'Playfair Display',serif; font-weight:900; letter-spacing:-0.02em; }
 
-  /* NAV */
-  nav {
-    position:fixed; top:0; left:0; width:100%;
-    background:var(--primary); color:#fff;
-    display:flex; justify-content:space-between; align-items:center;
-    padding:15px 30px; z-index:1000;
-    box-shadow:0 2px 10px rgba(0,0,0,0.3);
-  }
-  nav h1 { font-size:1.4em; letter-spacing:2px; }
-  nav ul { display:flex; gap:25px; list-style:none; }
-  nav ul li a { color:#fff; text-decoration:none; font-weight:500; }
-  nav ul li a:hover { color:var(--accent); }
-  .nav-tools { display:flex; align-items:center; gap:15px; }
-  .cart-btn, .theme-btn, .burger {
-    background:none; border:none; color:#fff; font-size:1.3em; cursor:pointer;
-  }
-  .cart-count {
-    background:var(--accent); color:#000; border-radius:50%;
-    padding:2px 8px; font-size:0.8em; margin-left:4px;
-  }
-  .burger { display:none; }
+/* ============ CUSTOM CURSOR ============ */
+.cursor, .cursor-follow {
+  position:fixed; top:0; left:0; pointer-events:none; z-index:9999;
+  border-radius:50%; transition:transform 0.15s var(--transition);
+}
+.cursor { width:8px; height:8px; background:var(--accent); }
+.cursor-follow { width:36px; height:36px; border:2px solid var(--accent); transition:all 0.3s var(--transition); }
+.cursor-follow.active { transform:scale(1.5); background:rgba(212,165,116,0.2); }
+@media(hover:none){ .cursor,.cursor-follow{display:none;} body{cursor:auto;} }
 
-  /* HERO */
-  .hero {
-    position:relative; height:100vh;
-    display:flex; align-items:center; justify-content:center;
-    text-align:center; color:#fff;
-    background:linear-gradient(135deg,#0d1b2a,#1b263b,#415a77);
-    overflow:hidden;
-  }
-  .hero-content { z-index:2; animation: fadeUp 1.5s ease; }
-  .hero h2 { font-size:3.5em; margin-bottom:15px; }
-  .hero p { font-size:1.3em; opacity:0.9; margin-bottom:25px; }
-  .hero button {
-    background:var(--accent); border:none; padding:14px 30px;
-    font-size:1em; border-radius:30px; cursor:pointer;
-    font-weight:bold; transition:0.3s;
-  }
-  .hero button:hover { transform:scale(1.05); }
+/* ============ LOADER ============ */
+.loader {
+  position:fixed; inset:0; background:var(--bg); z-index:10000;
+  display:flex; align-items:center; justify-content:center; flex-direction:column;
+  transition:opacity 0.6s, visibility 0.6s;
+}
+.loader.hidden { opacity:0; visibility:hidden; }
+.loader-logo {
+  font-family:'Playfair Display',serif; font-size:3em; color:var(--accent);
+  animation:pulse 1.5s infinite;
+}
+.loader-bar {
+  width:200px; height:3px; background:var(--border); margin-top:20px; border-radius:5px; overflow:hidden;
+}
+.loader-bar::after {
+  content:''; display:block; width:40%; height:100%; background:var(--accent);
+  animation:load 1.2s infinite;
+}
+@keyframes load { 0%{transform:translateX(-100%);} 100%{transform:translateX(400%);} }
+@keyframes pulse { 0%,100%{opacity:1;} 50%{opacity:0.5;} }
 
-  canvas#stars { position:absolute; top:0; left:0; width:100%; height:100%; z-index:1; }
+/* ============ SCROLL PROGRESS ============ */
+.progress-bar {
+  position:fixed; top:0; left:0; height:3px; width:0%;
+  background:linear-gradient(90deg,var(--accent),var(--accent-2));
+  z-index:1001; transition:width 0.1s;
+}
 
-  @keyframes fadeUp {
-    from { opacity:0; transform:translateY(30px); }
-    to { opacity:1; transform:translateY(0); }
-  }
+/* ============ BACKGROUND BLOBS ============ */
+.blob {
+  position:fixed; border-radius:50%; filter:blur(120px); opacity:0.3;
+  z-index:-1; animation:float 20s infinite ease-in-out;
+}
+.blob-1 { width:500px; height:500px; background:var(--accent); top:-100px; left:-100px; }
+.blob-2 { width:400px; height:400px; background:var(--primary); bottom:-100px; right:-100px; animation-delay:-10s; }
+.blob-3 { width:300px; height:300px; background:var(--accent-2); top:50%; left:50%; animation-delay:-5s; }
+@keyframes float {
+  0%,100% { transform:translate(0,0) scale(1); }
+  33% { transform:translate(50px,-50px) scale(1.1); }
+  66% { transform:translate(-30px,30px) scale(0.9); }
+}
 
-  /* SECTIONS */
-  section { padding:80px 20px; max-width:1100px; margin:auto; }
-  section h2 {
-    text-align:center; margin-bottom:30px;
-    font-size:2em; color:var(--primary);
-  }
+/* ============ NAV ============ */
+nav {
+  position:fixed; top:0; left:0; right:0; z-index:1000;
+  padding:20px 5%; display:flex; justify-content:space-between; align-items:center;
+  background:var(--glass); backdrop-filter:blur(20px); -webkit-backdrop-filter:blur(20px);
+  border-bottom:1px solid var(--border);
+  transition:padding 0.4s var(--transition);
+}
+nav.scrolled { padding:12px 5%; }
+.logo {
+  font-family:'Playfair Display',serif; font-size:1.6em; font-weight:900;
+  background:linear-gradient(135deg,var(--accent),var(--accent-2));
+  -webkit-background-clip:text; background-clip:text; color:transparent;
+}
+nav ul {
+  display:flex; gap:35px; list-style:none;
+}
+nav ul a {
+  color:var(--text); text-decoration:none; font-weight:500; font-size:0.95em;
+  position:relative; transition:color 0.3s;
+}
+nav ul a::after {
+  content:''; position:absolute; bottom:-5px; left:0; width:0; height:2px;
+  background:var(--accent); transition:width 0.3s var(--transition);
+}
+nav ul a:hover::after { width:100%; }
+nav ul a:hover { color:var(--accent); }
+.nav-tools { display:flex; gap:12px; align-items:center; }
+.icon-btn {
+  background:var(--glass); border:1px solid var(--border);
+  width:42px; height:42px; border-radius:50%; cursor:none;
+  display:flex; align-items:center; justify-content:center;
+  color:var(--text); font-size:1.1em; transition:all 0.3s var(--transition);
+  position:relative;
+}
+.icon-btn:hover { background:var(--accent); color:#fff; transform:translateY(-2px); }
+.cart-badge {
+  position:absolute; top:-4px; right:-4px;
+  background:var(--accent-2); color:#fff; border-radius:50%;
+  width:20px; height:20px; font-size:0.7em; font-weight:700;
+  display:flex; align-items:center; justify-content:center;
+}
+.burger { display:none; }
 
-  /* MENU */
-  .search {
-    display:block; margin:0 auto 30px; padding:12px 20px;
-    width:100%; max-width:400px; border-radius:30px;
-    border:1px solid #ccc; font-size:1em;
-  }
-  .meny {
-    display:grid; grid-template-columns:repeat(auto-fit,minmax(230px,1fr));
-    gap:20px;
-  }
-  .kort {
-    background:var(--card); padding:20px; border-radius:15px;
-    box-shadow:0 4px 15px rgba(0,0,0,0.1);
-    transition:0.3s; opacity:0; transform:translateY(30px);
-  }
-  .kort.show { opacity:1; transform:translateY(0); }
-  .kort:hover { transform:translateY(-8px); }
-  .kort h3 { color:var(--accent); margin-bottom:8px; }
-  .pris { color:#a0522d; font-weight:bold; margin-top:10px; }
-  .kort button {
-    margin-top:10px; padding:8px 14px;
-    background:var(--primary); color:#fff;
-    border:none; border-radius:8px; cursor:pointer;
-  }
+/* ============ HERO ============ */
+.hero {
+  min-height:100vh; display:flex; align-items:center; justify-content:center;
+  position:relative; padding:120px 5% 80px; text-align:center;
+}
+canvas.stars { position:absolute; inset:0; z-index:0; opacity:0.7; }
+.hero-content { position:relative; z-index:2; max-width:900px; }
+.badge {
+  display:inline-block; padding:8px 20px; border-radius:30px;
+  background:var(--glass); border:1px solid var(--border);
+  font-size:0.85em; margin-bottom:25px; backdrop-filter:blur(10px);
+  animation:fadeUp 1s var(--transition);
+}
+.badge span { color:var(--accent); font-weight:600; }
+.hero h1 {
+  font-size:clamp(2.5em, 6vw, 5em); line-height:1.1; margin-bottom:20px;
+  animation:fadeUp 1s 0.2s var(--transition) backwards;
+}
+.hero h1 .highlight {
+  background:linear-gradient(135deg,var(--accent),var(--accent-2));
+  -webkit-background-clip:text; background-clip:text; color:transparent;
+  font-style:italic;
+}
+.hero p {
+  font-size:1.2em; color:var(--text-soft); margin-bottom:35px;
+  max-width:600px; margin-inline:auto;
+  animation:fadeUp 1s 0.4s var(--transition) backwards;
+}
+.hero-buttons {
+  display:flex; gap:15px; justify-content:center; flex-wrap:wrap;
+  animation:fadeUp 1s 0.6s var(--transition) backwards;
+}
+.btn {
+  padding:16px 32px; border:none; border-radius:50px; font-size:1em; font-weight:600;
+  cursor:none; transition:all 0.4s var(--transition); text-decoration:none;
+  display:inline-flex; align-items:center; gap:10px;
+}
+.btn-primary {
+  background:linear-gradient(135deg,var(--accent),var(--accent-2)); color:#fff;
+  box-shadow:0 10px 30px rgba(212,165,116,0.4);
+}
+.btn-primary:hover { transform:translateY(-3px); box-shadow:0 15px 40px rgba(212,165,116,0.6); }
+.btn-outline {
+  background:transparent; color:var(--text); border:2px solid var(--border);
+}
+.btn-outline:hover { border-color:var(--accent); color:var(--accent); }
 
-  /* REVIEWS */
-  .reviews {
-    text-align:center; background:var(--card);
-    padding:40px 20px; border-radius:15px;
-    box-shadow:0 4px 15px rgba(0,0,0,0.1);
-  }
-  .review { display:none; font-style:italic; }
-  .review.active { display:block; animation:fadeUp 0.8s; }
-  .review strong { display:block; margin-top:10px; color:var(--accent); }
+.hero-stats {
+  display:flex; gap:40px; justify-content:center; margin-top:60px;
+  animation:fadeUp 1s 0.8s var(--transition) backwards;
+}
+.stat { text-align:center; }
+.stat-num {
+  font-size:2.5em; font-weight:900; font-family:'Playfair Display',serif;
+  background:linear-gradient(135deg,var(--accent),var(--accent-2));
+  -webkit-background-clip:text; background-clip:text; color:transparent;
+}
+.stat-label { font-size:0.85em; color:var(--text-soft); text-transform:uppercase; letter-spacing:2px; }
 
-  /* CONTACT */
-  form {
-    display:flex; flex-direction:column; gap:15px;
-    max-width:500px; margin:auto;
-  }
-  form input, form textarea {
-    padding:12px; border-radius:10px; border:1px solid #ccc;
-    font-size:1em;
-  }
-  form button {
-    background:var(--accent); border:none; padding:12px;
-    font-weight:bold; border-radius:10px; cursor:pointer;
-  }
+@keyframes fadeUp { from{opacity:0;transform:translateY(30px);} to{opacity:1;transform:translateY(0);} }
 
-  /* STATUS */
-  .status {
-    text-align:center; margin-top:10px; font-weight:bold;
-  }
-  .open { color:#2e8b57; }
-  .closed { color:#c0392b; }
+/* ============ SECTIONS ============ */
+section { padding:120px 5%; max-width:1400px; margin:auto; position:relative; }
+.section-head { text-align:center; margin-bottom:70px; }
+.section-tag {
+  display:inline-block; padding:6px 16px; background:var(--glass);
+  border-radius:20px; font-size:0.8em; color:var(--accent);
+  text-transform:uppercase; letter-spacing:3px; margin-bottom:15px;
+  border:1px solid var(--border);
+}
+.section-head h2 { font-size:clamp(2em,4vw,3.5em); margin-bottom:15px; }
+.section-head p { color:var(--text-soft); max-width:600px; margin:auto; }
 
-  /* POPUP */
-  .popup {
-    position:fixed; bottom:20px; right:20px;
-    background:var(--primary); color:#fff;
-    padding:15px 20px; border-radius:10px;
-    box-shadow:0 4px 15px rgba(0,0,0,0.3);
-    display:none; animation:fadeUp 0.6s;
-  }
+/* ============ MENU ============ */
+.menu-controls {
+  display:flex; flex-direction:column; gap:20px; margin-bottom:40px; align-items:center;
+}
+.search-box {
+  position:relative; width:100%; max-width:500px;
+}
+.search-box input {
+  width:100%; padding:16px 20px 16px 50px; border-radius:50px;
+  border:1px solid var(--border); background:var(--glass);
+  font-size:1em; color:var(--text); font-family:inherit;
+  backdrop-filter:blur(10px);
+}
+.search-box input:focus { outline:none; border-color:var(--accent); }
+.search-box::before {
+  content:'🔍'; position:absolute; left:20px; top:50%; transform:translateY(-50%);
+}
+.filters { display:flex; gap:10px; flex-wrap:wrap; justify-content:center; }
+.filter-btn {
+  padding:8px 20px; border-radius:30px; border:1px solid var(--border);
+  background:var(--glass); color:var(--text); cursor:none;
+  font-size:0.9em; transition:all 0.3s var(--transition);
+}
+.filter-btn.active, .filter-btn:hover {
+  background:var(--accent); color:#fff; border-color:var(--accent);
+}
 
-  /* FOOTER */
-  footer {
-    background:var(--primary); color:#eee;
-    text-align:center; padding:25px; margin-top:40px;
-  }
+.menu-grid {
+  display:grid; grid-template-columns:repeat(auto-fit,minmax(280px,1fr));
+  gap:25px;
+}
+.menu-card {
+  background:var(--bg-alt); border-radius:var(--radius); overflow:hidden;
+  box-shadow:var(--shadow); transition:all 0.5s var(--transition);
+  border:1px solid var(--border);
+  opacity:0; transform:translateY(40px);
+}
+.menu-card.show { opacity:1; transform:translateY(0); }
+.menu-card:hover { transform:translateY(-10px); box-shadow:var(--shadow-hover); }
+.menu-card-img {
+  height:180px; background:linear-gradient(135deg,var(--primary),var(--accent));
+  display:flex; align-items:center; justify-content:center; font-size:4em;
+  position:relative;
+}
+.menu-tag {
+  position:absolute; top:15px; left:15px; padding:5px 12px;
+  background:rgba(0,0,0,0.4); color:#fff; border-radius:20px; font-size:0.75em;
+  backdrop-filter:blur(10px);
+}
+.menu-card-body { padding:25px; }
+.menu-card h3 { font-size:1.4em; margin-bottom:8px; }
+.menu-card p { color:var(--text-soft); font-size:0.9em; margin-bottom:15px; min-height:40px; }
+.menu-card-footer {
+  display:flex; justify-content:space-between; align-items:center;
+}
+.price { font-size:1.4em; font-weight:700; color:var(--accent); }
+.add-btn {
+  background:var(--primary); color:#fff; border:none;
+  padding:10px 18px; border-radius:30px; cursor:none;
+  font-size:0.9em; font-weight:600; transition:all 0.3s var(--transition);
+  display:flex; align-items:center; gap:6px;
+}
+.add-btn:hover { background:var(--accent); transform:scale(1.05); }
 
-  /* RESPONSIVE */
-  @media(max-width:768px){
-    nav ul { display:none; flex-direction:column; background:var(--primary);
-      position:absolute; top:60px; right:0; width:200px; padding:20px; }
-    nav ul.show { display:flex; }
-    .burger { display:block; }
-    .hero h2 { font-size:2.2em; }
+/* ============ FEATURES ============ */
+.features {
+  display:grid; grid-template-columns:repeat(auto-fit,minmax(240px,1fr)); gap:25px;
+}
+.feature {
+  padding:35px 25px; background:var(--bg-alt); border-radius:var(--radius);
+  text-align:center; border:1px solid var(--border);
+  transition:all 0.4s var(--transition);
+}
+.feature:hover { transform:translateY(-8px); box-shadow:var(--shadow-hover); }
+.feature-icon {
+  width:70px; height:70px; margin:0 auto 20px;
+  background:linear-gradient(135deg,var(--accent),var(--accent-2));
+  border-radius:20px; display:flex; align-items:center; justify-content:center;
+  font-size:2em;
+}
+.feature h3 { margin-bottom:10px; font-size:1.2em; }
+.feature p { color:var(--text-soft); font-size:0.9em; }
+
+/* ============ GALLERY ============ */
+.gallery {
+  display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+  gap:15px;
+}
+.gallery-item {
+  aspect-ratio:1; border-radius:var(--radius-sm); overflow:hidden;
+  background:linear-gradient(135deg,var(--primary),var(--accent));
+  display:flex; align-items:center; justify-content:center; font-size:3em;
+  cursor:none; transition:all 0.4s var(--transition);
+  position:relative;
+}
+.gallery-item:hover { transform:scale(1.05); box-shadow:var(--shadow-hover); }
+.gallery-item::after {
+  content:'🔍'; position:absolute; inset:0; background:rgba(0,0,0,0.6);
+  display:flex; align-items:center; justify-content:center; font-size:0.8em;
+  opacity:0; transition:opacity 0.3s;
+}
+.gallery-item:hover::after { opacity:1; }
+
+.lightbox {
+  position:fixed; inset:0; background:rgba(0,0,0,0.9); z-index:9998;
+  display:none; align-items:center; justify-content:center;
+  animation:fadeIn 0.3s;
+}
+.lightbox.active { display:flex; }
+.lightbox-content {
+  font-size:15em; color:#fff;
+}
+.lightbox-close {
+  position:absolute; top:30px; right:30px; font-size:2em; color:#fff;
+  background:none; border:none; cursor:none;
+}
+@keyframes fadeIn { from{opacity:0;} to{opacity:1;} }
+
+/* ============ REVIEWS ============ */
+.reviews-wrapper {
+  max-width:800px; margin:auto; background:var(--bg-alt);
+  padding:60px 40px; border-radius:var(--radius);
+  box-shadow:var(--shadow); border:1px solid var(--border);
+  position:relative; overflow:hidden;
+}
+.review {
+  display:none; text-align:center;
+}
+.review.active { display:block; animation:fadeUp 0.6s; }
+.review-stars { color:var(--accent); font-size:1.3em; margin-bottom:20px; }
+.review-text {
+  font-size:1.3em; font-style:italic; margin-bottom:25px;
+  font-family:'Playfair Display',serif; line-height:1.5;
+}
+.review-author { font-weight:600; }
+.review-location { color:var(--text-soft); font-size:0.9em; }
+.review-dots {
+  display:flex; justify-content:center; gap:10px; margin-top:30px;
+}
+.dot {
+  width:10px; height:10px; border-radius:50%; background:var(--border);
+  cursor:none; transition:all 0.3s;
+}
+.dot.active { background:var(--accent); width:30px; border-radius:5px; }
+
+/* ============ BOOKING ============ */
+.booking-wrapper {
+  display:grid; grid-template-columns:1fr 1fr; gap:60px; align-items:center;
+}
+.booking-info h2 { font-size:2.8em; margin-bottom:20px; }
+.booking-info p { color:var(--text-soft); margin-bottom:30px; }
+.booking-perks { list-style:none; }
+.booking-perks li {
+  padding:10px 0; display:flex; align-items:center; gap:12px;
+}
+.booking-perks li::before {
+  content:'✓'; width:24px; height:24px; background:var(--accent); color:#fff;
+  border-radius:50%; display:flex; align-items:center; justify-content:center;
+  font-size:0.85em; font-weight:700;
+}
+.booking-form {
+  background:var(--bg-alt); padding:40px; border-radius:var(--radius);
+  box-shadow:var(--shadow); border:1px solid var(--border);
+}
+.form-group { margin-bottom:20px; }
+.form-group label {
+  display:block; margin-bottom:8px; font-size:0.9em; font-weight:500;
+}
+.form-group input, .form-group textarea, .form-group select {
+  width:100%; padding:14px 18px; border-radius:12px;
+  border:1px solid var(--border); background:var(--bg);
+  font-size:1em; color:var(--text); font-family:inherit;
+  transition:border 0.3s;
+}
+.form-group input:focus, .form-group textarea:focus, .form-group select:focus {
+  outline:none; border-color:var(--accent);
+}
+.form-row { display:grid; grid-template-columns:1fr 1fr; gap:15px; }
+
+/* ============ FAQ ============ */
+.faq { max-width:800px; margin:auto; }
+.faq-item {
+  background:var(--bg-alt); border-radius:var(--radius-sm); margin-bottom:15px;
+  border:1px solid var(--border); overflow:hidden;
+}
+.faq-question {
+  padding:20px 25px; cursor:none; display:flex; justify-content:space-between;
+  align-items:center; font-weight:600; font-size:1.05em;
+}
+.faq-question::after {
+  content:'+'; font-size:1.5em; transition:transform 0.3s;
+}
+.faq-item.open .faq-question::after { transform:rotate(45deg); }
+.faq-answer {
+  max-height:0; overflow:hidden; transition:max-height 0.4s var(--transition);
+  color:var(--text-soft);
+}
+.faq-item.open .faq-answer { max-height:200px; }
+.faq-answer p { padding:0 25px 20px; }
+
+/* ============ NEWSLETTER ============ */
+.newsletter {
+  background:linear-gradient(135deg,var(--primary),var(--accent-2));
+  padding:80px 40px; border-radius:var(--radius); text-align:center;
+  color:#fff; position:relative; overflow:hidden;
+}
+.newsletter h2 { color:#fff; margin-bottom:15px; }
+.newsletter p { margin-bottom:30px; opacity:0.9; }
+.newsletter-form {
+  display:flex; gap:10px; max-width:500px; margin:auto;
+}
+.newsletter-form input {
+  flex:1; padding:16px 20px; border-radius:50px; border:none;
+  font-size:1em; font-family:inherit;
+}
+.newsletter-form button {
+  padding:16px 30px; border-radius:50px; border:none;
+  background:var(--text); color:var(--bg); font-weight:600; cursor:none;
+  transition:all 0.3s;
+}
+.newsletter-form button:hover { transform:scale(1.05); }
+
+/* ============ CART DRAWER ============ */
+.cart-drawer {
+  position:fixed; top:0; right:-450px; width:400px; max-width:90vw; height:100vh;
+  background:var(--bg-alt); box-shadow:-10px 0 40px rgba(0,0,0,0.2);
+  z-index:1002; transition:right 0.4s var(--transition);
+  display:flex; flex-direction:column;
+}
+.cart-drawer.open { right:0; }
+.cart-header {
+  padding:25px; display:flex; justify-content:space-between; align-items:center;
+  border-bottom:1px solid var(--border);
+}
+.cart-header h3 { font-size:1.4em; }
+.cart-close {
+  background:none; border:none; font-size:1.5em; cursor:none; color:var(--text);
+}
+.cart-items { flex:1; overflow-y:auto; padding:20px 25px; }
+.cart-item {
+  display:flex; justify-content:space-between; align-items:center;
+  padding:15px 0; border-bottom:1px solid var(--border);
+}
+.cart-item-info h4 { font-size:1em; margin-bottom:4px; }
+.cart-item-info small { color:var(--text-soft); }
+.cart-qty {
+  display:flex; gap:8px; align-items:center;
+}
+.cart-qty button {
+  width:26px; height:26px; border-radius:50%; border:1px solid var(--border);
+  background:var(--bg); cursor:none; color:var(--text);
+}
+.cart-empty {
+  text-align:center; padding:40px 20px; color:var(--text-soft);
+}
+.cart-footer {
+  padding:25px; border-top:1px solid var(--border);
+}
+.cart-total {
+  display:flex; justify-content:space-between; margin-bottom:20px;
+  font-size:1.2em; font-weight:700;
+}
+.cart-total span:last-child { color:var(--accent); }
+
+.overlay {
+  position:fixed; inset:0; background:rgba(0,0,0,0.5); z-index:1001;
+  opacity:0; visibility:hidden; transition:all 0.3s;
+}
+.overlay.active { opacity:1; visibility:visible; }
+
+/* ============ MAP ============ */
+.map-wrapper {
+  border-radius:var(--radius); overflow:hidden;
+  box-shadow:var(--shadow); border:1px solid var(--border);
+  height:400px;
+}
+.map-wrapper iframe { width:100%; height:100%; border:0; filter:grayscale(0.3) contrast(1.1); }
+
+/* ============ FOOTER ============ */
+footer {
+  background:var(--bg-alt); padding:60px 5% 30px;
+  border-top:1px solid var(--border);
+}
+.footer-grid {
+  display:grid; grid-template-columns:2fr 1fr 1fr 1fr; gap:40px;
+  max-width:1400px; margin:0 auto 40px;
+}
+.footer-brand h3 {
+  font-family:'Playfair Display',serif; font-size:1.8em; margin-bottom:15px;
+  background:linear-gradient(135deg,var(--accent),var(--accent-2));
+  -webkit-background-clip:text; background-clip:text; color:transparent;
+}
+.footer-brand p { color:var(--text-soft); font-size:0.9em; }
+.footer-col h4 { margin-bottom:15px; font-size:1em; }
+.footer-col ul { list-style:none; }
+.footer-col ul li { margin-bottom:10px; }
+.footer-col a { color:var(--text-soft); text-decoration:none; font-size:0.9em; transition:color 0.3s; }
+.footer-col a:hover { color:var(--accent); }
+.footer-bottom {
+  text-align:center; padding-top:30px; border-top:1px solid var(--border);
+  color:var(--text-soft); font-size:0.85em;
+}
+
+/* ============ SCROLL TOP ============ */
+.scroll-top {
+  position:fixed; bottom:30px; right:30px; width:50px; height:50px;
+  background:var(--accent); color:#fff; border:none; border-radius:50%;
+  font-size:1.3em; cursor:none; z-index:999;
+  box-shadow:0 10px 30px rgba(0,0,0,0.2);
+  opacity:0; visibility:hidden; transition:all 0.3s;
+}
+.scroll-top.show { opacity:1; visibility:visible; }
+.scroll-top:hover { transform:translateY(-5px); }
+
+/* ============ TOAST ============ */
+.toast {
+  position:fixed; bottom:30px; left:50%; transform:translateX(-50%) translateY(100px);
+  background:var(--text); color:var(--bg); padding:15px 25px; border-radius:50px;
+  box-shadow:var(--shadow-hover); z-index:9999;
+  transition:transform 0.4s var(--transition);
+  font-weight:500;
+}
+.toast.show { transform:translateX(-50%) translateY(0); }
+
+/* ============ CONFETTI ============ */
+.confetti {
+  position:fixed; width:10px; height:10px; z-index:9998;
+  pointer-events:none; animation:confetti-fall 3s linear forwards;
+}
+@keyframes confetti-fall {
+  to { transform:translateY(100vh) rotate(720deg); opacity:0; }
+}
+
+/* ============ RESPONSIVE ============ */
+@media(max-width:900px){
+  .booking-wrapper { grid-template-columns:1fr; }
+  .footer-grid { grid-template-columns:1fr 1fr; }
+}
+@media(max-width:768px){
+  nav ul {
+    position:fixed; top:70px; right:-100%; width:80%; height:calc(100vh - 70px);
+    background:var(--bg-alt); flex-direction:column; padding:40px;
+    transition:right 0.4s var(--transition);
   }
+  nav ul.open { right:0; }
+  .burger { display:flex; }
+  .hero-stats { gap:20px; }
+  .stat-num { font-size:1.8em; }
+  .booking-form { padding:25px; }
+  .form-row { grid-template-columns:1fr; }
+  .footer-grid { grid-template-columns:1fr; }
+  .newsletter-form { flex-direction:column; }
+  section { padding:80px 5%; }
+}
 </style>
 </head>
 <body>
 
-<nav>
-  <h1>☕ Café Norrsken</h1>
+<!-- CURSOR -->
+<div class="cursor"></div>
+<div class="cursor-follow"></div>
+
+<!-- LOADER -->
+<div class="loader" id="loader">
+  <div class="loader-logo">Norrsken</div>
+  <div class="loader-bar"></div>
+</div>
+
+<!-- PROGRESS BAR -->
+<div class="progress-bar" id="progress"></div>
+
+<!-- BLOBS -->
+<div class="blob blob-1"></div>
+<div class="blob blob-2"></div>
+<div class="blob blob-3"></div>
+
+<!-- NAV -->
+<nav id="nav">
+  <div class="logo">Café Norrsken</div>
   <ul id="menu">
     <li><a href="#hem">Hem</a></li>
     <li><a href="#meny">Meny</a></li>
-    <li><a href="#recensioner">Recensioner</a></li>
+    <li><a href="#om">Om oss</a></li>
+    <li><a href="#recensioner">Omdömen</a></li>
+    <li><a href="#boka">Boka</a></li>
     <li><a href="#kontakt">Kontakt</a></li>
   </ul>
   <div class="nav-tools">
-    <button class="theme-btn" onclick="toggleTheme()">🌓</button>
-    <button class="cart-btn">🛒<span class="cart-count" id="cartCount">0</span></button>
-    <button class="burger" onclick="document.getElementById('menu').classList.toggle('show')">☰</button>
+    <button class="icon-btn" onclick="toggleTheme()" aria-label="Byt tema">🌓</button>
+    <button class="icon-btn" onclick="openCart()" aria-label="Varukorg">
+      🛒<span class="cart-badge" id="cartCount">0</span>
+    </button>
+    <button class="icon-btn burger" onclick="document.getElementById('menu').classList.toggle('open')">☰</button>
   </div>
 </nav>
 
 <!-- HERO -->
-<div class="hero" id="hem">
-  <canvas id="stars"></canvas>
+<section class="hero" id="hem">
+  <canvas class="stars" id="stars"></canvas>
   <div class="hero-content">
-    <h2>Välkommen till Café Norrsken ✨</h2>
-    <p>Där fjället möter fika och norrskenet dansar över kaffekoppen.</p>
-    <button onclick="document.getElementById('meny').scrollIntoView({behavior:'smooth'})">Se menyn</button>
-    <div class="status" id="status"></div>
+    <div class="badge">✨ <span>Fjällens mysigaste café</span> · Sedan 1998</div>
+    <h1>Där kaffet möter <span class="highlight">norrskenet</span></h1>
+    <p>Uppe bland fjälltopparna serverar vi hantverksmässig fika, nybakade läckerheter och kaffe bryggt på källvatten. En upplevelse för själen.</p>
+    <div class="hero-buttons">
+      <a href="#meny" class="btn btn-primary">Utforska menyn →</a>
+      <a href="#boka" class="btn btn-outline">Boka bord</a>
+    </div>
+    <div class="hero-stats">
+      <div class="stat"><div class="stat-num">27</div><div class="stat-label">År av tradition</div></div>
+      <div class="stat"><div class="stat-num">12k</div><div class="stat-label">Nöjda gäster</div></div>
+      <div class="stat"><div class="stat-num">4.9★</div><div class="stat-label">Snittbetyg</div></div>
+    </div>
   </div>
-</div>
+</section>
 
 <!-- MENU -->
 <section id="meny">
-  <h2>Vår meny</h2>
-  <input type="text" class="search" placeholder="🔎 Sök i menyn..." onkeyup="filterMenu(this.value)">
-  <div class="meny" id="menyLista">
-    <div class="kort"><h3>Kanelbulle</h3><p>Nybakad kladdig favorit.</p><div class="pris">35 kr</div><button onclick="addToCart()">Lägg till 🛒</button></div>
-    <div class="kort"><h3>Fjällkaffe</h3><p>Mörkrostat med källvatten.</p><div class="pris">29 kr</div><button onclick="addToCart()">Lägg till 🛒</button></div>
-    <div class="kort"><h3>Varm choklad</h3><p>Krämig med havssalt.</p><div class="pris">45 kr</div><button onclick="addToCart()">Lägg till 🛒</button></div>
-    <div class="kort"><h3>Renköttssmörgås</h3><p>På surdeg med pepparrot.</p><div class="pris">89 kr</div><button onclick="addToCart()">Lägg till 🛒</button></div>
-    <div class="kort"><h3>Blåbärspaj</h3><p>Med vaniljsås från trakten.</p><div class="pris">55 kr</div><button onclick="addToCart()">Lägg till 🛒</button></div>
-    <div class="kort"><h3>Chai Latte</h3><p>Kryddig och värmande.</p><div class="pris">42 kr</div><button onclick="addToCart()">Lägg till 🛒</button></div>
+  <div class="section-head">
+    <div class="section-tag">Vår Meny</div>
+    <h2>Nybakat & handbryggt</h2>
+    <p>Varje dag hantverkas våra bakverk från grunden med lokala råvaror från fjället.</p>
+  </div>
+  <div class="menu-controls">
+    <div class="search-box">
+      <input type="text" placeholder="Sök i menyn..." oninput="filterMenu(this.value)">
+    </div>
+    <div class="filters">
+      <button class="filter-btn active" onclick="filterCat(event,'alla')">Alla</button>
+      <button class="filter-btn" onclick="filterCat(event,'kaffe')">Kaffe & Te</button>
+      <button class="filter-btn" onclick="filterCat(event,'baket')">Baket</button>
+      <button class="filter-btn" onclick="filterCat(event,'mat')">Mat</button>
+    </div>
+  </div>
+  <div class="menu-grid" id="menuGrid"></div>
+</section>
+
+<!-- FEATURES / OM -->
+<section id="om">
+  <div class="section-head">
+    <div class="section-tag">Varför Norrsken?</div>
+    <h2>En upplevelse utöver det vanliga</h2>
+  </div>
+  <div class="features">
+    <div class="feature"><div class="feature-icon">☕</div><h3>Hantverkskaffe</h3><p>Bryggt på källvatten och närrostade bönor från lokala rosterier.</p></div>
+    <div class="feature"><div class="feature-icon">🥐</div><h3>Nybakat dagligen</h3><p>Alla bakverk bakas för hand varje morgon från grunden.</p></div>
+    <div class="feature"><div class="feature-icon">🌿</div><h3>Ekologiskt</h3><p>Vi använder KRAV-märkta råvaror och lokala leverantörer.</p></div>
+    <div class="feature"><div class="feature-icon">✨</div><h3>Unik utsikt</h3><p>Panoramautsikt över fjällen – med chans att se norrskenet.</p></div>
+  </div>
+</section>
+
+<!-- GALLERY -->
+<section id="galleri">
+  <div class="section-head">
+    <div class="section-tag">Galleri</div>
+    <h2>Ögonblick från caféet</h2>
+  </div>
+  <div class="gallery" id="gallery">
+    <div class="gallery-item" onclick="openLightbox('☕')">☕</div>
+    <div class="gallery-item" onclick="openLightbox('🥐')">🥐</div>
+    <div class="gallery-item" onclick="openLightbox('🏔️')">🏔️</div>
+    <div class="gallery-item" onclick="openLightbox('🌌')">🌌</div>
+    <div class="gallery-item" onclick="openLightbox('🍰')">🍰</div>
+    <div class="gallery-item" onclick="openLightbox('🔥')">🔥</div>
+    <div class="gallery-item" onclick="openLightbox('🌲')">🌲</div>
+    <div class="gallery-item" onclick="openLightbox('❄️')">❄️</div>
   </div>
 </section>
 
 <!-- REVIEWS -->
 <section id="recensioner">
-  <h2>Vad gästerna säger ⭐</h2>
-  <div class="reviews">
-    <div class="review active">"Bästa kanelbullen norr om polcirkeln!"<strong>– Anna, Kiruna</strong></div>
-    <div class="review">"Mysigt, varmt och gott. En dröm på vintern."<strong>– Erik, Umeå</strong></div>
-    <div class="review">"Renköttssmörgåsen var magisk!"<strong>– Sara, Stockholm</strong></div>
+  <div class="section-head">
+    <div class="section-tag">Omdömen</div>
+    <h2>Vad gästerna säger</h2>
+  </div>
+  <div class="reviews-wrapper">
+    <div class="review active">
+      <div class="review-stars">★★★★★</div>
+      <div class="review-text">"Bästa kanelbullen norr om polcirkeln. Miljön är magisk och personalen otroligt trevlig."</div>
+      <div class="review-author">Anna Lindström</div>
+      <div class="review-location">Kiruna, Sverige</div>
+    </div>
+    <div class="review">
+      <div class="review-stars">★★★★★</div>
+      <div class="review-text">"En dröm på vintern. Mysigt, varmt och gott. Kaffet är i världsklass."</div>
+      <div class="review-author">Erik Johansson</div>
+      <div class="review-location">Umeå, Sverige</div>
+    </div>
+    <div class="review">
+      <div class="review-stars">★★★★★</div>
+      <div class="review-text">"Renköttssmörgåsen var magisk och vi såg norrskenet från fönstret. Perfekt kväll!"</div>
+      <div class="review-author">Sara Bergman</div>
+      <div class="review-location">Stockholm, Sverige</div>
+    </div>
+    <div class="review-dots" id="reviewDots"></div>
   </div>
 </section>
 
-<!-- CONTACT -->
-<section id="kontakt">
-  <h2>Kontakta oss</h2>
-  <form onsubmit="return submitForm(event)">
-    <input type="text" placeholder="Namn" required>
-    <input type="email" placeholder="E-post" required>
-    <textarea placeholder="Meddelande" rows="4" required></textarea>
-    <button type="submit">Skicka ✉️</button>
-  </form>
+<!-- BOOKING -->
+<section id="boka">
+  <div class="booking-wrapper">
+    <div class="booking-info">
+      <div class="section-tag">Reservation</div>
+      <h2>Boka ditt bord</h2>
+      <p>Säkra din plats vid utsiktsfönstret och upplev fjällens magi med en handbryggd kopp kaffe.</p>
+      <ul class="booking-perks">
+        <li>Kostnadsfri avbokning fram till 24h innan</li>
+        <li>Bord vid fönster garanteras vid tidig bokning</li>
+        <li>Specialkost och allergier hanteras</li>
+        <li>Grupper på 8+ personer – kontakta oss direkt</li>
+      </ul>
+    </div>
+    <form class="booking-form" onsubmit="return bookTable(event)">
+      <div class="form-group">
+        <label>Fullständigt namn</label>
+        <input type="text" required placeholder="Ditt namn">
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>Datum</label>
+          <input type="date" required>
+        </div>
+        <div class="form-group">
+          <label>Tid</label>
+          <input type="time" required>
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>Antal gäster</label>
+          <select required>
+            <option>1 person</option><option>2 personer</option>
+            <option>3 personer</option><option>4 personer</option>
+            <option>5+ personer</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Telefon</label>
+          <input type="tel" required placeholder="07x-xxx xx xx">
+        </div>
+      </div>
+      <div class="form-group">
+        <label>Övriga önskemål</label>
+        <textarea rows="3" placeholder="Allergier, specialönskemål..."></textarea>
+      </div>
+      <button type="submit" class="btn btn-primary" style="width:100%;justify-content:center;">Bekräfta bokning ✓</button>
+    </form>
+  </div>
 </section>
 
+<!-- FAQ -->
+<section id="faq">
+  <div class="section-head">
+    <div class="section-tag">FAQ</div>
+    <h2>Vanliga frågor</h2>
+  </div>
+  <div class="faq">
+    <div class="faq-item"><div class="faq-question" onclick="toggleFaq(this)">Erbjuder ni glutenfria alternativ?</div><div class="faq-answer"><p>Ja! Vi har ett stort utbud av glutenfria bakverk och alternativ. Fråga personalen om dagens utbud.</p></div></div>
+    <div class="faq-item"><div class="faq-question" onclick="toggleFaq(this)">Kan jag betala med kort?</div><div class="faq-answer"><p>Absolut. Vi tar emot alla större kort, Swish samt kontanter.</p></div></div>
+    <div class="faq-item"><div class="faq-question" onclick="toggleFaq(this)">Har ni WiFi?</div><div class="faq-answer"><p>Ja, gratis WiFi för alla gäster. Lösenord får du av personalen.</p></div></div>
+    <div class="faq-item"><div class="faq-question" onclick="toggleFaq(this)">Är hunden välkommen?</div><div class="faq-answer"><p>Självklart! Vi älskar fyrbenta gäster och har vatten och godis till dem.</p></div></div>
+    <div class="faq-item"><div class="faq-question" onclick="toggleFaq(this)">Kan man se norrskenet från caféet?</div><div class="faq-answer"><p>Under vintersäsong och klara nätter, ja! Vi har till och med en norrskensvarnare som meddelar när det syns.</p></div></div>
+  </div>
+</section>
+
+<!-- MAP + KONTAKT -->
+<section id="kontakt">
+  <div class="section-head">
+    <div class="section-tag">Hitta hit</div>
+    <h2>Kontakt & Plats</h2>
+  </div>
+  <div class="booking-wrapper">
+    <div>
+      <h3 style="font-size:1.8em;margin-bottom:20px;">Vi ses på fjället</h3>
+      <p style="color:var(--text-soft);margin-bottom:25px;">Café Norrsken ligger vackert placerat med utsikt över fjällen. Varmt välkomna!</p>
+      <p style="margin-bottom:10px;"><strong>📍 Adress:</strong> Fjällvägen 12, 830 14 Åre</p>
+      <p style="margin-bottom:10px;"><strong>📞 Telefon:</strong> 070 – 123 45 67</p>
+      <p style="margin-bottom:10px;"><strong>✉️ E-post:</strong> hej@cafenorrsken.se</p>
+      <p style="margin-bottom:25px;"><strong>🕒 Öppet:</strong> <span id="openStatus"></span></p>
+      <div class="hero-buttons">
+        <a href="#" class="btn btn-outline">Instagram</a>
+        <a href="#" class="btn btn-outline">Facebook</a>
+      </div>
+    </div>
+    <div class="map-wrapper">
+      <iframe src="https://www.openstreetmap.org/export/embed.html?bbox=13.079%2C63.395%2C13.089%2C63.400&layer=mapnik" loading="lazy"></iframe>
+    </div>
+  </div>
+</section>
+
+<!-- NEWSLETTER -->
+<section>
+  <div class="newsletter">
+    <h2>Bli en del av Norrsken-familjen</h2>
+    <p>Få inspiration, säsongsmeny och exklusiva erbjudanden direkt i inkorgen.</p>
+    <form class="newsletter-form" onsubmit="return subscribe(event)">
+      <input type="email" placeholder="Din e-postadress" required>
+      <button type="submit">Prenumerera</button>
+    </form>
+  </div>
+</section>
+
+<!-- FOOTER -->
 <footer>
-  <p>© 2026 Café Norrsken – Byggd med ☕ och ✨</p>
+  <div class="footer-grid">
+    <div class="footer-brand">
+      <h3>Café Norrsken</h3>
+      <p>Fjällens mysigaste fika sedan 1998. Där kaffet möter norrskenet och tiden står stilla.</p>
+    </div>
+    <div class="footer-col">
+      <h4>Meny</h4>
+      <ul>
+        <li><a href="#meny">Kaffe & Te</a></li>
+        <li><a href="#meny">Baket</a></li>
+        <li><a href="#meny">Mat</a></li>
+        <li><a href="#meny">Säsong</a></li>
+      </ul>
+    </div>
+    <div class="footer-col">
+      <h4>Info</h4>
+      <ul>
+        <li><a href="#om">Om oss</a></li>
+        <li><a href="#boka">Boka bord</a></li>
+        <li><a href="#faq">FAQ</a></li>
+        <li><a href="#kontakt">Kontakt</a></li>
+      </ul>
+    </div>
+    <div class="footer-col">
+      <h4>Följ oss</h4>
+      <ul>
+        <li><a href="#">Instagram</a></li>
+        <li><a href="#">Facebook</a></li>
+        <li><a href="#">TripAdvisor</a></li>
+        <li><a href="#">YouTube</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="footer-bottom">© 2026 Café Norrsken · Byggd med ☕ i fjällen</div>
 </footer>
 
-<div class="popup" id="popup">🎉 Välkommen till Café Norrsken!</div>
+<!-- CART DRAWER -->
+<div class="overlay" id="overlay" onclick="closeCart()"></div>
+<div class="cart-drawer" id="cart">
+  <div class="cart-header">
+    <h3>Din beställning</h3>
+    <button class="cart-close" onclick="closeCart()">×</button>
+  </div>
+  <div class="cart-items" id="cartItems">
+    <div class="cart-empty">🛒<br>Varukorgen är tom</div>
+  </div>
+  <div class="cart-footer">
+    <div class="cart-total"><span>Totalt:</span><span id="cartTotal">0 kr</span></div>
+    <button class="btn btn-primary" style="width:100%;justify-content:center;" onclick="checkout()">Slutför beställning</button>
+  </div>
+</div>
+
+<!-- LIGHTBOX -->
+<div class="lightbox" id="lightbox" onclick="closeLightbox()">
+  <button class="lightbox-close">×</button>
+  <div class="lightbox-content" id="lightboxContent"></div>
+</div>
+
+<!-- SCROLL TOP -->
+<button class="scroll-top" id="scrollTop" onclick="window.scrollTo({top:0,behavior:'smooth'})">↑</button>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
 
 <script>
-  // POPUP
-  window.onload = () => {
-    setTimeout(()=> {
-      const p = document.getElementById('popup');
-      p.style.display='block';
-      setTimeout(()=> p.style.display='none', 4000);
-    }, 1500);
-    updateStatus();
-    animateCards();
-  };
+/* ============ DATA ============ */
+const menuItems = [
+  {name:"Kanelbulle", desc:"Nybakad, kladdig i mitten, kardemummadoftande.", price:35, cat:"baket", icon:"🥐", tag:"Populär"},
+  {name:"Fjällkaffe", desc:"Mörkrostat kaffe bryggt på färskt källvatten.", price:29, cat:"kaffe", icon:"☕", tag:"Klassiker"},
+  {name:"Varm choklad", desc:"Krämig med grädde och en gnutta havssalt.", price:45, cat:"kaffe", icon:"🍫", tag:"Vinter"},
+  {name:"Renköttssmörgås", desc:"På surdegsbröd med pepparrotscrème och sallad.", price:89, cat:"mat", icon:"🥪", tag:"Lokalt"},
+  {name:"Blåbärspaj", desc:"Nyplockade fjällblåbär med vaniljsås från trakten.", price:55, cat:"baket", icon:"🥧", tag:"Säsong"},
+  {name:"Chai Latte", desc:"Kryddig och värmande, gjord från grunden.", price:42, cat:"kaffe", icon:"🍵", tag:""},
+  {name:"Rågbröd med gravad lax", desc:"Med senapssås och dill från örtträdgården.", price:95, cat:"mat", icon:"🐟", tag:"Nyhet"},
+  {name:"Havrekaka", desc:"Glutenfri, seg och söt med lingonsylt.", price:38, cat:"baket", icon:"🍪", tag:"Glutenfritt"},
+  {name:"Kardemummabulle", desc:"Vår signaturbulle – doftrik och nybakad.", price:42, cat:"baket", icon:"🥐", tag:"Signatur"}
+];
 
-  // THEME
-  function toggleTheme() {
-    const html = document.documentElement;
-    html.dataset.theme = html.dataset.theme === 'dark' ? '' : 'dark';
+let cart = [];
+let currentCat = 'alla';
+
+/* ============ RENDER MENU ============ */
+function renderMenu(filter='') {
+  const grid = document.getElementById('menuGrid');
+  grid.innerHTML = '';
+  const filtered = menuItems.filter(i =>
+    (currentCat==='alla' || i.cat===currentCat) &&
+    (i.name.toLowerCase().includes(filter.toLowerCase()) || i.desc.toLowerCase().includes(filter.toLowerCase()))
+  );
+  if(!filtered.length){ grid.innerHTML='<p style="text-align:center;grid-column:1/-1;color:var(--text-soft);">Inga träffar 🥲</p>'; return; }
+  filtered.forEach((item,i)=>{
+    const card = document.createElement('div');
+    card.className='menu-card';
+    card.innerHTML = `
+      <div class="menu-card-img">${item.icon}
+        ${item.tag?`<span class="menu-tag">${item.tag}</span>`:''}
+      </div>
+      <div class="menu-card-body">
+        <h3>${item.name}</h3>
+        <p>${item.desc}</p>
+        <div class="menu-card-footer">
+          <span class="price">${item.price} kr</span>
+          <button class="add-btn" onclick='addToCart(${JSON.stringify(item)})'>+ Lägg till</button>
+        </div>
+      </div>
+    `;
+    grid.appendChild(card);
+    setTimeout(()=>card.classList.add('show'), i*80);
+  });
+}
+
+function filterMenu(v){ renderMenu(v); }
+function filterCat(e,cat){
+  document.querySelectorAll('.filter-btn').forEach(b=>b.classList.remove('active'));
+  e.target.classList.add('active');
+  currentCat=cat; renderMenu();
+}
+
+/* ============ CART ============ */
+function addToCart(item){
+  const existing = cart.find(c=>c.name===item.name);
+  if(existing) existing.qty++;
+  else cart.push({...item, qty:1});
+  updateCart();
+  showToast(`✓ ${item.name} tillagd`);
+}
+
+function updateCart(){
+  const count = cart.reduce((s,i)=>s+i.qty,0);
+  document.getElementById('cartCount').innerText = count;
+  const items = document.getElementById('cartItems');
+  if(!cart.length){ items.innerHTML='<div class="cart-empty">🛒<br>Varukorgen är tom</div>'; }
+  else {
+    items.innerHTML = cart.map((i,idx)=>`
+      <div class="cart-item">
+        <div class="cart-item-info">
+          <h4>${i.icon} ${i.name}</h4>
+          <small>${i.price} kr/st</small>
+        </div>
+        <div class="cart-qty">
+          <button onclick="changeQty(${idx},-1)">−</button>
+          <span>${i.qty}</span>
+          <button onclick="changeQty(${idx},1)">+</button>
+        </div>
+      </div>
+    `).join('');
   }
+  const total = cart.reduce((s,i)=>s+i.price*i.qty,0);
+  document.getElementById('cartTotal').innerText = total + ' kr';
+}
 
-  // CART
-  let cart = 0;
-  function addToCart() {
-    cart++;
-    document.getElementById('cartCount').innerText = cart;
+function changeQty(idx,d){
+  cart[idx].qty += d;
+  if(cart[idx].qty<=0) cart.splice(idx,1);
+  updateCart();
+}
+
+function openCart(){ document.getElementById('cart').classList.add('open'); document.getElementById('overlay').classList.add('active'); }
+function closeCart(){ document.getElementById('cart').classList.remove('open'); document.getElementById('overlay').classList.remove('active'); }
+
+function checkout(){
+  if(!cart.length){ showToast('Varukorgen är tom!'); return; }
+  confetti();
+  showToast('🎉 Tack för din beställning!');
+  cart=[]; updateCart(); closeCart();
+}
+
+/* ============ THEME ============ */
+function toggleTheme(){
+  const html=document.documentElement;
+  const cur=html.dataset.theme;
+  html.dataset.theme = cur==='dark'?'':'dark';
+  localStorage.setItem('theme', html.dataset.theme);
+}
+if(localStorage.getItem('theme')!==null) document.documentElement.dataset.theme=localStorage.getItem('theme');
+
+/* ============ REVIEWS ============ */
+let rIdx=0;
+const reviews=document.querySelectorAll('.review');
+const dots=document.getElementById('reviewDots');
+reviews.forEach((_,i)=>{
+  const d=document.createElement('div');
+  d.className='dot'+(i===0?' active':'');
+  d.onclick=()=>showReview(i);
+  dots.appendChild(d);
+});
+function showReview(i){
+  reviews[rIdx].classList.remove('active');
+  document.querySelectorAll('.dot')[rIdx].classList.remove('active');
+  rIdx=i;
+  reviews[rIdx].classList.add('active');
+  document.querySelectorAll('.dot')[rIdx].classList.add('active');
+}
+setInterval(()=>showReview((rIdx+1)%reviews.length), 5000);
+
+/* ============ FAQ ============ */
+function toggleFaq(el){ el.parentElement.classList.toggle('open'); }
+
+/* ============ FORMS ============ */
+function bookTable(e){
+  e.preventDefault();
+  confetti();
+  showToast('✓ Bokning bekräftad! Vi hörs snart.');
+  e.target.reset();
+  return false;
+}
+function subscribe(e){
+  e.preventDefault();
+  showToast('✓ Tack för prenumerationen!');
+  e.target.reset();
+  return false;
+}
+
+/* ============ TOAST ============ */
+function showToast(msg){
+  const t=document.getElementById('toast');
+  t.innerText=msg;
+  t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'), 2500);
+}
+
+/* ============ CONFETTI ============ */
+function confetti(){
+  const colors=['#d4a574','#c56b48','#4a90e2','#ffd47a'];
+  for(let i=0;i<50;i++){
+    const c=document.createElement('div');
+    c.className='confetti';
+    c.style.left=Math.random()*100+'vw';
+    c.style.top='-20px';
+    c.style.background=colors[Math.floor(Math.random()*colors.length)];
+    c.style.animationDuration=(Math.random()*2+2)+'s';
+    document.body.appendChild(c);
+    setTimeout(()=>c.remove(), 4000);
   }
+}
 
-  // SEARCH
-  function filterMenu(val) {
-    document.querySelectorAll('.kort').forEach(k=>{
-      k.style.display = k.innerText.toLowerCase().includes(val.toLowerCase()) ? 'block' : 'none';
-    });
-  }
+/* ============ LIGHTBOX ============ */
+function openLightbox(c){
+  document.getElementById('lightboxContent').innerText=c;
+  document.getElementById('lightbox').classList.add('active');
+}
+function closeLightbox(){ document.getElementById('lightbox').classList.remove('active'); }
 
-  // REVIEW CAROUSEL
-  let idx = 0;
-  const reviews = document.querySelectorAll('.review');
-  setInterval(()=>{
-    reviews[idx].classList.remove('active');
-    idx = (idx+1) % reviews.length;
-    reviews[idx].classList.add('active');
-  }, 4000);
+/* ============ NAV SCROLL ============ */
+window.addEventListener('scroll', ()=>{
+  document.getElementById('nav').classList.toggle('scrolled', scrollY>50);
+  document.getElementById('scrollTop').classList.toggle('show', scrollY>500);
+  const p=(scrollY/(document.body.scrollHeight-innerHeight))*100;
+  document.getElementById('progress').style.width=p+'%';
+});
 
-  // FORM
-  function submitForm(e) {
-    e.preventDefault();
-    alert("Tack för ditt meddelande! ✨");
-    e.target.reset();
-    return false;
-  }
+/* ============ CUSTOM CURSOR ============ */
+const cursor=document.querySelector('.cursor');
+const follow=document.querySelector('.cursor-follow');
+document.addEventListener('mousemove', e=>{
+  cursor.style.transform=`translate(${e.clientX-4}px,${e.clientY-4}px)`;
+  follow.style.transform=`translate(${e.clientX-18}px,${e.clientY-18}px)`;
+});
+document.querySelectorAll('a,button,.menu-card,.gallery-item,.dot,.filter-btn,input,textarea,select').forEach(el=>{
+  el.addEventListener('mouseenter',()=>follow.classList.add('active'));
+  el.addEventListener('mouseleave',()=>follow.classList.remove('active'));
+});
 
-  // STATUS
-  function updateStatus() {
-    const h = new Date().getHours();
-    const s = document.getElementById('status');
-    if (h >= 8 && h < 17) {
-      s.innerText = "🟢 Vi har öppet nu!";
-      s.className = "status open";
-    } else {
-      s.innerText = "🔴 Vi har stängt just nu.";
-      s.className = "status closed";
-    }
-  }
+/* ============ STARS CANVAS ============ */
+const canvas=document.getElementById('stars');
+const ctx=canvas.getContext('2d');
+let w,h,stars=[];
+function resize(){ w=canvas.width=innerWidth; h=canvas.height=canvas.parentElement.offsetHeight; }
+resize(); window.onresize=resize;
+for(let i=0;i<150;i++) stars.push({x:Math.random()*w,y:Math.random()*h,r:Math.random()*1.5,s:Math.random()*0.3,a:Math.random()});
+function draw(){
+  ctx.clearRect(0,0,w,h);
+  stars.forEach(s=>{
+    ctx.fillStyle=`rgba(255,255,255,${s.a})`;
+    ctx.beginPath();
+    ctx.arc(s.x,s.y,s.r,0,Math.PI*2);
+    ctx.fill();
+    s.y+=s.s; s.a+=Math.random()*0.04-0.02;
+    if(s.a>1) s.a=1; if(s.a<0.2) s.a=0.2;
+    if(s.y>h) s.y=0;
+  });
+  requestAnimationFrame(draw);
+}
+draw();
 
-  // SCROLL ANIMATIONS
-  function animateCards() {
-    const cards = document.querySelectorAll('.kort');
-    const obs = new IntersectionObserver(entries=>{
-      entries.forEach(e=>{
-        if(e.isIntersecting) e.target.classList.add('show');
-      });
-    });
-    cards.forEach(c=>obs.observe(c));
-  }
+/* ============ OPEN STATUS ============ */
+function updateStatus(){
+  const h=new Date().getHours();
+  const el=document.getElementById('openStatus');
+  if(h>=8 && h<17) el.innerHTML='<span style="color:#2e8b57;font-weight:600;">● Öppet nu</span> · 08:00–17:00';
+  else el.innerHTML='<span style="color:#c0392b;font-weight:600;">● Stängt</span> · Öppnar 08:00';
+}
 
-  // STAR CANVAS
-  const canvas = document.getElementById('stars');
-  const ctx = canvas.getContext('2d');
-  let w, h, stars=[];
-  function resize(){ w=canvas.width=innerWidth; h=canvas.height=innerHeight; }
-  resize();
-  window.onresize = resize;
-  for(let i=0;i<120;i++) stars.push({x:Math.random()*w,y:Math.random()*h,r:Math.random()*1.5,s:Math.random()*0.5});
-  function drawStars(){
-    ctx.clearRect(0,0,w,h);
-    ctx.fillStyle="#fff";
-    stars.forEach(s=>{
-      ctx.beginPath();
-      ctx.arc(s.x,s.y,s.r,0,Math.PI*2);
-      ctx.fill();
-      s.y += s.s;
-      if(s.y>h) s.y=0;
-    });
-    requestAnimationFrame(drawStars);
-  }
-  drawStars();
+/* ============ INIT ============ */
+window.addEventListener('load', ()=>{
+  setTimeout(()=>document.getElementById('loader').classList.add('hidden'), 1200);
+  renderMenu();
+  updateStatus();
+  setInterval(updateStatus, 60000);
+});
+
+/* Close mobile menu on link click */
+document.querySelectorAll('#menu a').forEach(a=>a.addEventListener('click',()=>document.getElementById('menu').classList.remove('open')));
 </script>
 </body>
 </html>
